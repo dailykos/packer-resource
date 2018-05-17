@@ -42,15 +42,15 @@ for FILE in $FILES; do
   fi
 done
 
-jq '.params|del(.template,.var_file) // empty' /tmp/input > /tmp/vars.json
+#jq '.params|del(.template,.var_file) // empty' /tmp/input > /tmp/vars.json
 
 cd $(dirname $SRC/$TEMPLATE)
 
-packer validate $ARGS -var-file=/tmp/vars.json $SRC/$TEMPLATE
+packer validate $ARGS $SRC/$TEMPLATE
 
 echo
 
-packer build -machine-readable $ARGS -var-file=/tmp/vars.json $SRC/$TEMPLATE \
+packer build -machine-readable $ARGS $SRC/$TEMPLATE \
   | tee /tmp/output | awk -F, '/,ui,/ { print $5 }' | sed -u 's#%!(PACKER_COMMA)#,#g;s#\\n#\n#g'
 
 # FIXME: include metadata such as AMI name, copied region: ami-id, etc.
